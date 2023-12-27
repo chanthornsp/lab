@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,9 @@ Route::match(['get', 'post'], '/about', function () {
 });
 
 Route::get('/user', [UserController::class, 'user']);
+
+
+Route::get('/rooms', [RoomController::class, 'index']);
 
 
 require __DIR__ . '/auth.php';
