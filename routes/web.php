@@ -31,5 +31,9 @@ Route::get('/user', [UserController::class, 'user']);
 
 Route::get('/rooms', [RoomController::class, 'index']);
 
+Route::get('/count', function () {
+    return inertia('Count');
+});
+
 
 require __DIR__ . '/auth.php';
