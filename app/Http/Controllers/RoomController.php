@@ -13,4 +13,10 @@ class RoomController extends Controller
 
         return $rooms;
     }
+
+
+    public function create()
+    {
+        return inertia('Room/Create');
+    }
 }

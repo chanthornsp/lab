@@ -22,18 +22,15 @@ Route::get('/', function () {
     return 'Home';
 });
 
-Route::match(['get', 'post'], '/about', function () {
-    return 'About';
-});
+// Rooms
+// 1. List all rooms
+Route::get('/room', [RoomController::class, 'index'])->name('room.index');
+// 2. Create a room
+Route::get('/room/create', [RoomController::class, 'create'])->name('room.create');
+// 3. show edit form
+// 4. Store or Update a room
+// 5. Delete a room
 
-Route::get('/user', [UserController::class, 'user']);
-
-
-Route::get('/rooms', [RoomController::class, 'index']);
-
-Route::get('/count', function () {
-    return inertia('Count');
-});
 
 
 require __DIR__ . '/auth.php';
