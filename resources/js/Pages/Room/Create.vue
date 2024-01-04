@@ -25,7 +25,7 @@ const save = () => {
         capacity: capacity.value,
         status: status.value,
     }
-
+    // https://inertiajs.com/manual-visits
     router.post('/room/store', data, {
         onSuccess: () => {
             message.value = 'Room created successfully'
