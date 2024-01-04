@@ -29,6 +29,7 @@ Route::get('/room', [RoomController::class, 'index'])->name('room.index');
 Route::get('/room/create', [RoomController::class, 'create'])->name('room.create');
 // 3. show edit form
 // 4. Store or Update a room
+Route::post('/room/store/{id?}', [RoomController::class, 'store'])->name('room.store');
 // 5. Delete a room
 
 
