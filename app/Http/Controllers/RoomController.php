@@ -10,9 +10,10 @@ class RoomController extends Controller
 {
     public function index()
     {
-        $rooms = Room::take(10)->get();
-
-        return $rooms;
+        $rooms = Room::get();
+        return inertia('Room/Index', [
+            'rooms' => $rooms
+        ]);
     }
 
 
