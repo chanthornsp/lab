@@ -1,50 +1,62 @@
 <script setup>
-import { ref } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { ref } from "vue";
+import { router } from "@inertiajs/vue3";
 
 const props = defineProps({
     errors: Object,
-})
+});
 
-const roomName = ref()
-const descirption = ref()
-const capacity = ref()
-const status = ref('active')
+// const roomName = ref();
+// const descirption = ref();
+// const capacity = ref();
+// const status = ref("active");
 
-const message = ref('')
+const form = ref({
+    name: "",
+    description: "",
+    capacity: 0,
+    status: "active",
+});
+
+const message = ref("");
 
 // function save (){
 
 // }
 
 const save = () => {
-
-    const data = {
-        roomName: roomName.value,
-        descirption: descirption.value,
-        capacity: capacity.value,
-        status: status.value,
-    }
+    // const data = {
+    //     roomName: roomName.value,
+    //     descirption: descirption.value,
+    //     capacity: capacity.value,
+    //     status: status.value,
+    // };
     // https://inertiajs.com/manual-visits
-    router.post('/room/store', data, {
+    router.post("/room/store", form.value, {
         onSuccess: () => {
-            message.value = 'Room created successfully'
-            roomName.value = ''
-            descirption.value = ''
-            capacity.value = ''
-            status.value = 'active'
-        }
-    })
-}
-
-
+            // roomName.value = "";
+            // descirption.value = "";
+            // capacity.value = "";
+            // status.value = "active";
+            message.value = "Room created successfully";
+            form.value = {
+                name: "",
+                description: "",
+                capacity: 0,
+                status: "active",
+            };
+        },
+    });
+};
 </script>
-
 
 <template>
     <div class="container p-4 px-8 mx-auto mt-6 border rounded-xl">
-        <h2 class="text-2xl text-blue-600 sm:text-red-600 md:text-yellow-600 lg:text-purple-600 xl:text-teal-600">Create
-            Room</h2>
+        <h2
+            class="text-2xl text-blue-600 sm:text-red-600 md:text-yellow-600 lg:text-purple-600 xl:text-teal-600"
+        >
+            Create Room
+        </h2>
         <div class="text-green-600">
             {{ message }}
         </div>
@@ -53,27 +65,38 @@ const save = () => {
             <div class="flex flex-col gap-2 lg:flex-row">
                 <div class="flex flex-col w-full">
                     <label>Room name</label>
-                    <input v-model.trim="roomName" type="text" class="p-2 rounded-md" />
-                    <div v-if="errors.roomName" class="text-sm text-red-500">
-                        {{ errors.roomName }}
+                    <input
+                        v-model.trim="form.name"
+                        type="text"
+                        class="p-2 rounded-md"
+                    />
+                    <div v-if="errors.name" class="text-sm text-red-500">
+                        {{ errors.name }}
                     </div>
                 </div>
                 <div class="flex flex-col w-full">
                     <label>Description</label>
-                    <textarea v-model="descirption" class="rounded-md"></textarea>
+                    <textarea
+                        v-model="form.description"
+                        class="rounded-md"
+                    ></textarea>
                 </div>
             </div>
             <div class="flex flex-col gap-2 lg:flex-row">
                 <div class="flex flex-col w-full">
                     <label>Capacity</label>
-                    <input v-model.number="capacity" class="rounded-md" type="number" />
+                    <input
+                        v-model.number="form.capacity"
+                        class="rounded-md"
+                        type="number"
+                    />
                     <div v-if="errors.capacity" class="text-sm text-red-500">
                         {{ errors.capacity }}
                     </div>
                 </div>
                 <div class="flex flex-col w-full">
                     <label>Status</label>
-                    <select v-model="status" class="rounded-md">
+                    <select v-model="form.status" class="rounded-md">
                         <option value="">Select a Staus</option>
                         <option value="active">Active</option>
                         <option value="maintenance">Maintenance</option>
@@ -84,7 +107,12 @@ const save = () => {
                 </div>
             </div>
             <div class="flex justify-end">
-                <button class="p-2 text-white bg-blue-600 rounded-lg active:bg-blue-800" type="submit">Create</button>
+                <button
+                    class="p-2 text-white bg-blue-600 rounded-lg active:bg-blue-800"
+                    type="submit"
+                >
+                    Create
+                </button>
             </div>
         </form>
     </div>
