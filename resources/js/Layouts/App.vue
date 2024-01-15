@@ -8,7 +8,7 @@ import Sidebar from "./Sidebar.vue";
         <Header />
     </div>
     <div class="flex gap-4">
-        <div class="w-60 bg-red-200 shrink-0">
+        <div class="bg-red-200 w-60 shrink-0">
             <Sidebar />
         </div>
         <div class="w-full">
