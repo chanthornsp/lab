@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { router } from "@inertiajs/vue3";
+import { router, Link } from "@inertiajs/vue3";
 import Layout from "@/Layouts/App.vue";
 
 const props = defineProps({
@@ -53,7 +53,15 @@ const save = () => {
 
 <template>
     <Layout>
-        <div class="container p-4 px-8 mx-auto mt-6 border rounded-xl">
+        <div class="p-4">
+            <div class="my-2">
+                <Link
+                    href="/room/"
+                    class="p-2 text-white bg-yellow-600 rounded-md"
+                >
+                    Back
+                </Link>
+            </div>
             <h2
                 class="text-2xl text-blue-600 sm:text-red-600 md:text-yellow-600 lg:text-purple-600 xl:text-teal-600"
             >
