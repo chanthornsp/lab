@@ -33,5 +33,18 @@ Route::post('/room/store/{id?}', [RoomController::class, 'store'])->name('room.s
 // 5. Delete a room
 
 
+// show login page
 
-require __DIR__ . '/auth.php';
+Route::get('/login', [UserController::class, 'login'])->name('login');
+
+// get login data from user input
+Route::post('/login', [UserController::class, 'verifyLogin'])->name('login.verify');
+
+Route::get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+});
+
+
+
+
+// require __DIR__ . '/auth.php';
