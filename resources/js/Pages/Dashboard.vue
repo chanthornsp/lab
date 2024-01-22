@@ -5,7 +5,7 @@ import App from "@/Layouts/App.vue";
 <template>
     <App>
         <div>
-            <h1>Dashboard</h1>
+            <h1>Dashboard 2</h1>
         </div>
     </App>
 </template>
