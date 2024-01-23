@@ -24,29 +24,29 @@ class UserController extends Controller
             'remember' => 'nullable|boolean'
         ]);
 
-        // $user = User::where('email', $request->email)->first();
-        // if ($user) {
-        //     $encryptedPassword = $user->password;
-        //     $checkPassword = Hash::check($request->password, $encryptedPassword);
-        //     if ($checkPassword) {
-        //         // login here
-        //         Auth::login($user, $request->remember);
-        //         $request->session()->regenerate();
-
-        //         return redirect()->to('/dashboard');
-        //     }
-        // }
-        $adminUser = AdminUser::where('email', $request->email)->first();
-        if ($adminUser) {
-            $encryptedPassword = $adminUser->password;
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            $encryptedPassword = $user->password;
             $checkPassword = Hash::check($request->password, $encryptedPassword);
             if ($checkPassword) {
                 // login here
-                Auth::guard('admin')->login($adminUser, $request->remember);
+                Auth::login($user, $request->remember);
                 $request->session()->regenerate();
 
-                return redirect()->to('/is-admin');
+                return redirect()->to('/dashboard');
             }
         }
+        // $adminUser = AdminUser::where('email', $request->email)->first();
+        // if ($adminUser) {
+        //     $encryptedPassword = $adminUser->password;
+        //     $checkPassword = Hash::check($request->password, $encryptedPassword);
+        //     if ($checkPassword) {
+        //         // login here
+        //         Auth::guard('admin')->login($adminUser, $request->remember);
+        //         $request->session()->regenerate();
+
+        //         return redirect()->to('/is-admin');
+        //     }
+        // }
     }
 }

@@ -12,7 +12,6 @@ class DashboardController extends Controller
 
         $loggedInUser = Auth::user();
 
-        dd($loggedInUser);
 
 
         return inertia('Dashboard');

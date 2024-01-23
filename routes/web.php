@@ -26,15 +26,31 @@ Route::get('/', function () {
     return 'Home';
 });
 
-// Rooms
-// 1. List all rooms
-Route::get('/room', [RoomController::class, 'index'])->name('room.index');
-// 2. Create a room
-Route::get('/room/create', [RoomController::class, 'create'])->name('room.create');
-// 3. show edit form
-// 4. Store or Update a room
-Route::post('/room/store/{id?}', [RoomController::class, 'store'])->name('room.store');
-// 5. Delete a room
+
+
+Route::middleware('checkAuth')->group(function () {
+
+    Route::prefix('/room')->controller(RoomController::class)->name('room.')->group(function () {
+        // Rooms
+        // 1. List all roomsuser@email.com
+        Route::get('/',  'index')->name('index');
+        // 2. Create a room
+        Route::get('/create',  'create')->name('create');
+        // 3. show edit form
+
+        Route::get('/edit/{id}',  'edit')->name('edit');
+
+        // 4. Store or Update a room
+        Route::post('/store/{id?}',  'store')->name('store');
+        // 5. Delete a room
+
+    });
+
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+});
+
 
 
 // show login page
@@ -46,7 +62,6 @@ Route::get('/login', [UserController::class, 'login'])
 // get login data from user input
 Route::post('/login', [UserController::class, 'verifyLogin'])->name('login.verify');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('checkAuth');
 
 
 Route::get('/is-admin', function () {
