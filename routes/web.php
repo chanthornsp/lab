@@ -43,8 +43,10 @@ Route::middleware('checkAuth')->group(function () {
         // 4. Store or Update a room
         Route::post('/store/{id?}',  'store')->name('store');
         // 5. Delete a room
-
     });
+
+    // logout
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 
     // Dashboard
