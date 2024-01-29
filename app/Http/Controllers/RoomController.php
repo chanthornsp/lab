@@ -62,4 +62,39 @@ class RoomController extends Controller
 
         return redirect()->back();
     }
+
+    public function update(Request $request, string $id)
+    {
+
+        $request->validate([
+            'name' => 'required|unique:rooms,name,' . $id . ',room_id',
+            'description' => 'nullable',
+            'capacity' => 'required|integer',
+            'status' => 'required|in:active,maintenance',
+        ]);
+
+        // 1. get room from database by id
+
+        $room = Room::findOrFail($id);
+
+
+        // 2. update room
+        $room->update([
+            'name' => $request->input('name'),
+            'description' => $request->input('description'),
+            'capacity' => $request->input('capacity'),
+            'status' => $request->input('status'),
+            'user_id' => auth()->user()->id,
+        ]);
+
+        return redirect()->route('room.index');
+    }
+
+
+    public function destroy(string $id)
+    {
+        $room = Room::findOrFail($id);
+        $room->delete();
+        return redirect()->back();
+    }
 }

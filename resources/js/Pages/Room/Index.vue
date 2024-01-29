@@ -2,10 +2,11 @@
 import { PropType } from "vue";
 
 import App from "@/Layouts/App.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
 import { ref } from "vue";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 type RoomType = {
     room_id: String;
@@ -24,7 +25,8 @@ defineProps({
     errors: Object as PropType<Record<string, string[]>>,
 });
 
-const form = ref({
+const updateForm = ref({
+    room_id: null,
     name: "",
     description: "",
     capacity: 0,
@@ -34,7 +36,35 @@ const form = ref({
 const message = ref("");
 
 const update = () => {
-    console.log(form.value);
+    if (updateForm.value.room_id) {
+        router.post(
+            route("room.update", updateForm.value.room_id),
+            updateForm.value,
+            {
+                onSuccess: () => {
+                    openModal.value = false;
+                    message.value = "Room updated successfully";
+                    updateForm.value = {
+                        room_id: null,
+                        name: "",
+                        description: "",
+                        capacity: 0,
+                        status: "active",
+                    };
+                    Swal.fire({
+                        title: "Success",
+                        icon: "success",
+                        toast: true,
+                        position: "top-end",
+                        timer: 3000,
+                        showConfirmButton: false,
+                    });
+                },
+            },
+        );
+    } else {
+        alert("error");
+    }
 };
 
 const openModal = ref(false);
@@ -43,10 +73,11 @@ const edit = (roomId: String) => {
     axios
         .get("/room/edit/" + roomId)
         .then((res) => {
-            form.value.name = res.data.name;
-            form.value.description = res.data.description;
-            form.value.capacity = res.data.capacity;
-            form.value.status = res.data.status;
+            updateForm.value.room_id = res.data.room_id;
+            updateForm.value.name = res.data.name;
+            updateForm.value.description = res.data.description;
+            updateForm.value.capacity = res.data.capacity;
+            updateForm.value.status = res.data.status;
 
             openModal.value = true;
         })
@@ -54,6 +85,28 @@ const edit = (roomId: String) => {
             console.log(err);
         })
         .finally(() => console.log("finally"));
+};
+
+const onDelete = (roomId: String) => {
+    Swal.fire({
+        title: "Do you want to delete?",
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "Yes",
+        denyButtonText: `No`,
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            router.delete(route("room.destroy", roomId), {
+                onSuccess: () => {
+                    Swal.fire({
+                        title: "Success",
+                        icon: "success",
+                    });
+                },
+            });
+        }
+    });
 };
 </script>
 
@@ -68,7 +121,7 @@ const edit = (roomId: String) => {
                         <div class="flex flex-col w-full">
                             <label>Room name</label>
                             <input
-                                v-model.trim="form.name"
+                                v-model.trim="updateForm.name"
                                 type="text"
                                 class="p-2 rounded-md"
                             />
@@ -82,7 +135,7 @@ const edit = (roomId: String) => {
                         <div class="flex flex-col w-full">
                             <label>Description</label>
                             <textarea
-                                v-model="form.description"
+                                v-model="updateForm.description"
                                 class="rounded-md"
                             ></textarea>
                         </div>
@@ -91,7 +144,7 @@ const edit = (roomId: String) => {
                         <div class="flex flex-col w-full">
                             <label>Capacity</label>
                             <input
-                                v-model.number="form.capacity"
+                                v-model.number="updateForm.capacity"
                                 class="rounded-md"
                                 type="number"
                             />
@@ -104,7 +157,10 @@ const edit = (roomId: String) => {
                         </div>
                         <div class="flex flex-col w-full">
                             <label>Status</label>
-                            <select v-model="form.status" class="rounded-md">
+                            <select
+                                v-model="updateForm.status"
+                                class="rounded-md"
+                            >
                                 <option value="">Select a Staus</option>
                                 <option value="active">Active</option>
                                 <option value="maintenance">Maintenance</option>
@@ -193,6 +249,8 @@ const edit = (roomId: String) => {
                                     Edit
                                 </button>
                                 <button
+                                    type="button"
+                                    @click="onDelete(room.room_id)"
                                     class="p-2 text-white bg-red-600 rounded-md"
                                 >
                                     Delete

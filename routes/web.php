@@ -43,6 +43,11 @@ Route::middleware('checkAuth')->group(function () {
         // 4. Store or Update a room
         Route::post('/store/{id?}',  'store')->name('store');
         // 5. Delete a room
+
+        Route::delete('/delete/{id}', 'destroy')->name('destroy');
+
+
+        Route::post('/update/{id}', 'update')->name('update');
     });
 
     // logout
