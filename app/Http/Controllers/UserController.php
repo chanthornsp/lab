@@ -7,15 +7,17 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
+    // Show login form
     public function login()
     {
         return inertia('User/Login');
     }
 
-
+    // get login request
     public function verifyLogin(Request $request)
     {
         $request->validate([
@@ -35,7 +37,20 @@ class UserController extends Controller
 
                 return redirect()->to('/dashboard');
             }
+
+
+            throw  ValidationException::withMessages([
+                'email' => 'Invalid email or password.'
+            ]);
         }
+
+        throw  ValidationException::withMessages([
+            'email' => 'Invalid email or password.'
+        ]);
+
+
+
+
         // $adminUser = AdminUser::where('email', $request->email)->first();
         // if ($adminUser) {
         //     $encryptedPassword = $adminUser->password;
@@ -50,6 +65,7 @@ class UserController extends Controller
         // }
     }
 
+    // logout request
     public function logout(Request $request)
     {
         Auth::logout();

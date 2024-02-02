@@ -24,6 +24,7 @@ class RoomController extends Controller
 
     public function edit(string $id)
     {
+        // abort(401, 'Unauthorized');
         return Room::query()
             ->where('room_id', $id)
             ->firstOrFail();
@@ -43,22 +44,41 @@ class RoomController extends Controller
 
         // https://laravel.com/docs/10.x/validation
         $request->validate([
-            'name' => 'required|unique:rooms,name',
             'description' => 'nullable',
             'capacity' => 'required|integer',
             'status' => 'required|in:active,maintenance',
         ]);
 
         $roomId = $request->input('name');
-        // https://laravel.com/docs/10.x/eloquent#inserting-and-updating-models
-        Room::create([
+        $data = [
             'room_id' => $roomId,
             'name' => $request->input('name'),
             'description' => $request->input('description'),
             'capacity' => $request->input('capacity'),
             'status' => $request->input('status'),
             'user_id' => auth()->user()->id,
-        ]);
+        ];
+
+        if ($id) {
+
+            $request->validate([
+                'name' => 'required|unique:rooms,name,' . $id . ',room_id',
+            ]);
+
+            // find room by id
+
+            $room = Room::findOrFail($id);
+            $room->update($data);
+            // and update room
+        } else {
+            $request->validate([
+                'name' => 'required|unique:rooms,name',
+            ]);
+            // create room
+            Room::create($data);
+        }
+
+        // https://laravel.com/docs/10.x/eloquent#inserting-and-updating-models
 
         return redirect()->back();
     }

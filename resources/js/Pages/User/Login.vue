@@ -1,30 +1,36 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { router } from "@inertiajs/vue3";
+// import { router } from "@inertiajs/vue3";
+import { useForm } from "@inertiajs/vue3";
 
-defineProps({
-    errors: {
-        type: Object,
-    },
-});
+// defineProps({
+//     errors: {
+//         type: Object,
+//     },
+// });
 
-const form = ref({
+// const form = ref({
+//     email: "",
+//     password: "",
+//     remember: false,
+// });
+
+// function submit(e) {
+//     e.preventDefault();
+//     router.post("/login", form.value);
+// }
+
+const form = useForm({
     email: "",
     password: "",
     remember: false,
 });
-
-function submit(e) {
-    e.preventDefault();
-    router.post("/login", form.value);
-}
 </script>
 
 <template>
-    {{ errors }}
     <div class="flex items-center justify-center h-screen bg-gray-200">
         <form
-            @submit="submit"
+            @submit.prevent="form.post(route('login'))"
             class="p-4 space-y-3 bg-white shadow-md rounded-xl w-96"
         >
             <div>
@@ -34,6 +40,9 @@ function submit(e) {
                     class="w-full input input-primary"
                     type="email"
                 />
+                <div class="text-red-600" v-if="form.errors.email">
+                    {{ form.errors.email }}
+                </div>
             </div>
             <div>
                 <label class="label">Password</label>
@@ -42,6 +51,9 @@ function submit(e) {
                     class="w-full input input-primary"
                     type="password"
                 />
+                <div class="text-red-600" v-if="form.errors.email">
+                    {{ form.errors.password }}
+                </div>
             </div>
             <div>
                 <label class="flex justify-start gap-2 label">
@@ -52,6 +64,9 @@ function submit(e) {
                     />
                     Remeber me
                 </label>
+                <div class="text-red-600" v-if="form.errors.email">
+                    {{ form.errors.remember }}
+                </div>
             </div>
             <div class="flex items-center justify-end gap-3">
                 <a class="link link-primary" href="#">Forgot password?</a>
