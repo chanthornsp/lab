@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckLogin;
 use App\Http\Middleware\IsAdmin;
@@ -23,39 +24,59 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return 'Home';
+    return redirect()->route('dashboard');
 });
 
 
 
 Route::middleware('checkAuth')->group(function () {
 
-    Route::prefix('/room')->controller(RoomController::class)->name('room.')->group(function () {
-        // Rooms
-        // 1. List all roomsuser@email.com
-        Route::get('/',  'index')->name('index');
-        // 2. Create a room
-        Route::get('/create',  'create')->name('create');
-        // 3. show edit form
+    Route::prefix('/room')
+        ->controller(RoomController::class)
+        ->name('room.')->group(function () {
+            // Rooms
+            // 1. List all roomsuser@email.com
+            Route::get('/',  'index')->name('index');
+            // 2. Create a room
+            Route::get('/create',  'create')->name('create');
+            // 3. show edit form
 
-        Route::get('/edit/{id}',  'edit')->name('edit');
+            Route::get('/edit/{id}',  'edit')->name('edit');
 
-        // 4. Store or Update a room
-        Route::post('/store/{id?}',  'store')->name('store');
-        // 5. Delete a room
+            // 4. Store or Update a room
+            Route::post('/store/{id?}',  'store')->name('store');
+            // 5. Delete a room
 
-        Route::delete('/delete/{id}', 'destroy')->name('destroy');
+            Route::delete('/delete/{id}', 'destroy')->name('destroy');
 
 
-        Route::post('/update/{id}', 'update')->name('update');
-    });
+            Route::post('/update/{id}', 'update')->name('update');
+        });
+
+    Route::prefix('/status')->controller(StatusController::class)
+        ->name('status.')
+        ->group(function () {
+            // your code here
+            // list status and create or edit form
+
+            Route::get('/', 'index')->name('index');
+
+            // store or update status
+            Route::post('/store/{id?}', 'store')->name('store');
+
+            Route::get('/edit/{id}', 'edit')->name('edit');
+
+            // delete status
+            Route::delete('/delete/{id}', 'destroy')->name('destroy');
+        });
+
 
     // logout
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
 
 
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 
