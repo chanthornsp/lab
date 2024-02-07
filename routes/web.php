@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ComputerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
@@ -73,6 +74,12 @@ Route::middleware('checkAuth')->group(function () {
 
     // logout
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+    // computer
+    Route::resource('/computer', ComputerController::class);
+
+
+
 
 
     // Dashboard

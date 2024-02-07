@@ -2,7 +2,7 @@ import "./bootstrap";
 import "../css/app.css";
 
 import { createApp, h, DefineComponent } from "vue";
-import { createInertiaApp } from "@inertiajs/vue3";
+import { createInertiaApp, Link } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy/dist/vue.m";
 // import Heading from './Components/Heading.vue';
@@ -25,6 +25,7 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(pinia)
             // .component('Heading',Heading)
+            .component("Link", Link)
             .mount(el);
     },
     progress: {

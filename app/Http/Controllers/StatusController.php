@@ -52,5 +52,9 @@ class StatusController extends Controller
 
     public function destroy($id)
     {
+        // find status first
+        // and delete
+        Status::findOrFail($id)->delete();
+        return redirect()->back();
     }
 }

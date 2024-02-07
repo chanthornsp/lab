@@ -40,12 +40,14 @@ const toggleTheme = () => {
     if (appTheme.value === "light") {
         appTheme.value = "dark";
         document.documentElement.classList.add("dark");
+        document.documentElement.setAttribute("data-theme", "coffee");
         // set localStorage
 
         localStorage.setItem("theme", "dark");
     } else {
         appTheme.value = "light";
         document.documentElement.classList.remove("dark");
+        document.documentElement.setAttribute("data-theme", "light");
         // set localStorage
         localStorage.setItem("theme", "light");
     }
@@ -57,6 +59,7 @@ onMounted(() => {
         appTheme.value = theme;
         if (theme === "dark") {
             document.documentElement.classList.add("dark");
+            document.documentElement.setAttribute("data-theme", "coffee");
         }
     }
 });

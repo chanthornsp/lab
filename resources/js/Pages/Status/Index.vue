@@ -3,6 +3,7 @@ import App from "@/Layouts/App.vue";
 import { useForm } from "@inertiajs/vue3";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { router } from "@inertiajs/vue3";
 
 defineProps<{
     status: {
@@ -45,7 +46,30 @@ const onEdit = async (id: number) => {
 };
 
 const onDelete = (id: number) => {
-    console.log(id);
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.delete(route("status.destroy", id), {
+                onSuccess: () => {
+                    Swal.fire({
+                        title: "Delete Successfully!!",
+                        icon: "success",
+                        toast: true,
+                        position: "top-end",
+                        timer: 3000,
+                        showConfirmButton: false,
+                    });
+                },
+            });
+        }
+    });
 };
 </script>
 <template>
@@ -83,8 +107,8 @@ const onDelete = (id: number) => {
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
-            <div class="mt-4">
-                <table class="table-auto w-full">
+            <div class="mt-4 bg-base-100 p-2 rounded-xl">
+                <table class="table table-zebra">
                     <thead>
                         <tr>
                             <th>No.</th>

@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    .table-base {
+        @apply w-full table-auto;
+    }
+
+    .table-base thead th {
+        @apply border border-gray-600 p-1 bg-base-300;
+    }
+    .table-base tbody td {
+        @apply border p-1;
+    }
+}
