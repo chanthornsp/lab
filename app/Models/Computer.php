@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Computer extends Model
 {
@@ -22,4 +23,13 @@ class Computer extends Model
     protected $primaryKey = 'computer_id';
     protected $keyType = 'string';
     public $incrementing = false;
+
+    public static function booted()
+    {
+        static::creating(function ($computer) {
+            // computed computer id on creating
+            // ex: room id + pc name = computer id
+            $computer->computer_id = (string) Str::slug($computer->room_id . '-' . $computer->name);
+        });
+    }
 }

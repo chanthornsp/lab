@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import App from "@/Layouts/App.vue";
+import { ComputerType } from "@/types/computerType";
 import { useForm } from "@inertiajs/vue3";
 import { MoveLeft } from "lucide-vue-next";
+import Swal from "sweetalert2";
 
 const props = defineProps<{
     rooms: {
@@ -12,19 +14,31 @@ const props = defineProps<{
         id: number;
         name: string;
     }[];
+    computer?: ComputerType;
 }>();
 
 // form object
 const form = useForm({
-    name: "",
-    description: "",
-    room_id: "",
-    status_id: null,
+    computer_id: props.computer?.computer_id ?? "",
+    name: props.computer?.name ?? "",
+    description: props.computer?.description ?? "",
+    room_id: props.computer?.room_id ?? "",
+    status_id: props.computer?.status_id ?? null,
 });
 
 // handle form submission
 const onSave = () => {
-    console.log(form.data());
+    form.post(route("computer.store"), {
+        onSuccess: () => {
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                timer: 3000,
+                position: "top-end",
+                toast: true,
+            });
+        },
+    });
 };
 </script>
 <template>
@@ -50,7 +64,11 @@ const onSave = () => {
                         <input
                             v-model="form.name"
                             class="input input-primary w-full"
+                            :class="{ 'input-error': form.errors.name }"
                         />
+                        <div class="text-error" v-if="form.errors.name">
+                            {{ form.errors.name }}
+                        </div>
                     </div>
                     <div>
                         <label class="label">Description</label>
@@ -65,6 +83,7 @@ const onSave = () => {
                             <select
                                 v-model="form.room_id"
                                 class="select select-primary w-full"
+                                :class="{ 'select-error': form.errors.room_id }"
                             >
                                 <option value="">Select Room</option>
                                 <option
@@ -74,12 +93,18 @@ const onSave = () => {
                                     {{ item.name }}
                                 </option>
                             </select>
+                            <div class="text-error" v-if="form.errors.room_id">
+                                {{ form.errors.room_id }}
+                            </div>
                         </div>
                         <div class="w-full">
                             <label class="label">Status</label>
                             <select
                                 v-model="form.status_id"
                                 class="select select-primary w-full"
+                                :class="{
+                                    'select-error': form.errors.status_id,
+                                }"
                             >
                                 <option :value="null">Select Status</option>
                                 <option
@@ -89,6 +114,12 @@ const onSave = () => {
                                     {{ item.name }}
                                 </option>
                             </select>
+                            <div
+                                class="text-error"
+                                v-if="form.errors.status_id"
+                            >
+                                {{ form.errors.status_id }}
+                            </div>
                         </div>
                     </div>
                     <div class="mt-2 flex justify-end">

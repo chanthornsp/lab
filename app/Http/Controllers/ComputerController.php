@@ -15,7 +15,12 @@ class ComputerController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Computer/Index');
+        $computers = Computer::query()
+            ->paginate(20);
+        // return $computers;
+        return Inertia::render('Computer/Index', [
+            'computers' => $computers
+        ]);
     }
 
     /**
@@ -44,7 +49,30 @@ class ComputerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'computer_id' => 'nullable',
+            'name' => 'required',
+            'description' => 'nullable',
+            'room_id' => 'required|exists:rooms,room_id',
+            'status_id' => 'required|exists:status,id',
+        ]);
+
+        // dd($validatedData);
+        // $request->computer_id
+        if ($request->input('computer_id')) {
+            $request->validate([
+                'name' => 'unique:computers,name,' . $request->input('computer_id') . ',computer_id'
+            ]);
+            $computer = Computer::findOrFail($request->input('computer_id'));
+            $computer->update($validatedData);
+        } else {
+            $request->validate([
+                'name' => 'unique:computers,name'
+            ]);
+            Computer::create($validatedData);
+        }
+
+        return redirect()->route('computer.index');
     }
 
     /**
@@ -60,7 +88,21 @@ class ComputerController extends Controller
      */
     public function edit(Computer $computer)
     {
-        //
+        $rooms = Room::query()
+            ->select('room_id', 'name')
+            ->orderBy('name')
+            ->get();
+        // staus
+        $statuses = Status::query()
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('Computer/Create', [
+            'rooms' => $rooms,
+            'statuses' => $statuses,
+            'computer' => $computer
+        ]);
     }
 
     /**
