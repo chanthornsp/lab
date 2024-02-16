@@ -2,10 +2,44 @@
 import App from "@/Layouts/App.vue";
 import { ComputerType } from "@/types/computerType";
 import { PaginateType } from "@/types/paginateType";
+import { RoomType } from "@/types/room";
+import { StatusType } from "@/types/status";
+import { useForm, router } from "@inertiajs/vue3";
+import { watch } from "vue";
 
-defineProps<{
+const props = defineProps<{
     computers: PaginateType<ComputerType>;
+    rooms: RoomType[];
+    statuses: StatusType[];
+    filters?: {
+        keyword: string;
+        room_id: string;
+        status_id: number | null;
+    };
 }>();
+
+const filterForm = useForm({
+    keyword: props.filters?.keyword ?? "",
+    room_id: props.filters?.room_id ?? "",
+    status_id: props.filters?.status_id ?? null,
+});
+
+watch(
+    () => filterForm.data(),
+    () => {
+        router.get(route("computer.index"), filterForm.data(), {
+            preserveState: true,
+            only: ["computers"],
+            replace: true,
+        });
+    },
+);
+
+const onClearFilter = () => {
+    filterForm.keyword = "";
+    filterForm.status_id = null;
+    filterForm.room_id = "";
+};
 </script>
 <template>
     <App>
@@ -13,12 +47,53 @@ defineProps<{
             <div class="mb-2">
                 <h2 class="text-2xl font-bold">Computer Management</h2>
                 <div class="mt-4">
-                    <div class="bg-base-100 p-2 rounded-xl">
+                    <div
+                        class="bg-base-100 p-2 rounded-xl flex gap-2 items-center"
+                    >
                         <Link
                             :href="route('computer.create')"
                             class="btn btn-primary"
                             >New</Link
                         >
+                        <input
+                            v-model="filterForm.keyword"
+                            type="text"
+                            class="input input-primary w-full"
+                            placeholder="Search..."
+                        />
+                        <select
+                            v-model="filterForm.room_id"
+                            class="select select-primary w-full"
+                        >
+                            <option value="">Select Room</option>
+                            <option
+                                v-for="(room, index) in rooms"
+                                :key="index"
+                                :value="room.room_id"
+                            >
+                                {{ room.name }}
+                            </option>
+                        </select>
+                        <select
+                            v-model="filterForm.status_id"
+                            class="select select-primary w-full"
+                        >
+                            <option :value="null">Select Status</option>
+                            <option
+                                v-for="(status, index) in statuses"
+                                :key="index"
+                                :value="status.id"
+                            >
+                                {{ status.name }}
+                            </option>
+                        </select>
+                        <button
+                            class="btn btn-warning"
+                            type="button"
+                            @click="onClearFilter"
+                        >
+                            Clear
+                        </button>
                     </div>
                 </div>
             </div>
@@ -42,8 +117,8 @@ defineProps<{
                             <td>{{ item.computer_id }}</td>
                             <td>{{ item.name.toUpperCase() }}</td>
                             <td>{{ item.description }}</td>
-                            <td>{{ item.room_id }}</td>
-                            <td>{{ item.status_id }}</td>
+                            <td>{{ item.room?.name }}</td>
+                            <td>{{ item.status?.name }}</td>
                             <td>
                                 <Link
                                     :href="
@@ -63,7 +138,7 @@ defineProps<{
                 <div class="join">
                     <Link
                         v-for="link in computers.links"
-                        :href="link.url"
+                        :href="link.url ?? '#'"
                         class="join-item btn"
                         :class="{ 'btn-primary': link.active }"
                     >

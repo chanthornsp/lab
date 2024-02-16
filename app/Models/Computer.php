@@ -29,7 +29,17 @@ class Computer extends Model
         static::creating(function ($computer) {
             // computed computer id on creating
             // ex: room id + pc name = computer id
-            $computer->computer_id = (string) Str::slug($computer->room_id . '-' . $computer->name);
+            $computer->computer_id = (string) Str::slug($computer->room_id . '-' . $computer->name, '-');
         });
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class, 'room_id', 'room_id');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 }

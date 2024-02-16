@@ -15,4 +15,9 @@ class Status extends Model
         'name',
         'description'
     ];
+
+    public function computers()
+    {
+        return $this->hasMany(Computer::class);
+    }
 }

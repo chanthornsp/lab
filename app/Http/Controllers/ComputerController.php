@@ -13,13 +13,50 @@ class ComputerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+
+        // // get all computers status = 1
+        // $computers = Room::find('G-102')->computers;
+
+        // return $computers;
+
         $computers = Computer::query()
-            ->paginate(20);
+            ->with(['status', 'room']);
+
+        if ($request->input('room_id')) {
+            $computers->where('room_id', $request->input('room_id'));
+        }
+        if ($request->input('status_id')) {
+            $computers->where('status_id', $request->input('status_id'));
+        }
+
+        if ($request->input('keyword')) {
+            $computers->where('name', 'like', "%" . $request->input('keyword') . "%");
+        }
+        $computers =  $computers
+            ->paginate(20)
+            ->withQueryString();
+
+        $rooms = Room::query()
+            ->select('room_id', 'name')
+            ->orderBy('name')
+            ->get();
+        // staus
+        $statuses = Status::query()
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
         // return $computers;
         return Inertia::render('Computer/Index', [
-            'computers' => $computers
+            'rooms' => $rooms,
+            'statuses' => $statuses,
+            'computers' => $computers,
+            'filters' => $request->all(
+                'room_id',
+                'status_id',
+                'keyword'
+            )
         ]);
     }
 

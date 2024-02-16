@@ -41,4 +41,10 @@ class Room extends Model
         'status',
         'user_id',
     ];
+
+
+    public function computers()
+    {
+        return $this->hasMany(Computer::class, 'room_id');
+    }
 }
