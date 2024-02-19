@@ -20,4 +20,9 @@ class Status extends Model
     {
         return $this->hasMany(Computer::class);
     }
+
+    public function components()
+    {
+        return $this->hasMany(Component::class, 'status_id', 'id');
+    }
 }

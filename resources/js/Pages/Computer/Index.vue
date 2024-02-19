@@ -6,6 +6,8 @@ import { RoomType } from "@/types/room";
 import { StatusType } from "@/types/status";
 import { useForm, router } from "@inertiajs/vue3";
 import { watch } from "vue";
+import { throttle, pickBy } from "lodash";
+import Swal from "sweetalert2";
 
 const props = defineProps<{
     computers: PaginateType<ComputerType>;
@@ -26,19 +28,45 @@ const filterForm = useForm({
 
 watch(
     () => filterForm.data(),
-    () => {
-        router.get(route("computer.index"), filterForm.data(), {
+    throttle(() => {
+        // console.log("log data");
+        router.get(route("computer.index"), pickBy(filterForm.data()), {
             preserveState: true,
             only: ["computers"],
             replace: true,
         });
-    },
+    }, 500),
 );
 
 const onClearFilter = () => {
     filterForm.keyword = "";
     filterForm.status_id = null;
     filterForm.room_id = "";
+};
+
+const onDelete = async (pcId: string) => {
+    await Swal.fire({
+        title: "Do you want to delete?",
+        showDenyButton: true,
+        showCancelButton: false,
+        confirmButtonText: "Delete",
+        denyButtonText: `Cancel`,
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            router.delete(route("computer.destroy", pcId), {
+                onSuccess: () => {
+                    Swal.fire({
+                        title: "Success",
+                        text: "Computer has been deleted",
+                        icon: "success",
+                        toast: true,
+                        timer: 3000,
+                    });
+                },
+            });
+        }
+    });
 };
 </script>
 <template>
@@ -128,7 +156,13 @@ const onClearFilter = () => {
                                 >
                                     Edit
                                 </Link>
-                                <button class="btn btn-error">Delete</button>
+                                <button
+                                    type="button"
+                                    @click="onDelete(item.computer_id)"
+                                    class="btn btn-error"
+                                >
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     </tbody>

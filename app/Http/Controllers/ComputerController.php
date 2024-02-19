@@ -22,21 +22,29 @@ class ComputerController extends Controller
         // return $computers;
 
         $computers = Computer::query()
-            ->with(['status', 'room']);
-
-        if ($request->input('room_id')) {
-            $computers->where('room_id', $request->input('room_id'));
-        }
-        if ($request->input('status_id')) {
-            $computers->where('status_id', $request->input('status_id'));
-        }
-
-        if ($request->input('keyword')) {
-            $computers->where('name', 'like', "%" . $request->input('keyword') . "%");
-        }
-        $computers =  $computers
+            ->with(['status', 'room'])
+            ->when($request->input('keyword'), fn ($query)
+            => $query->where('name', 'like', '%' . $request->input('keyword') . '%'))
+            ->when($request->input('room_id'), fn ($query)
+            => $query->where('room_id', $request->input('room_id')))
+            ->when($request->input('status_id'), fn ($query)
+            => $query->where('status_id', $request->input('status_id')))
             ->paginate(20)
             ->withQueryString();
+
+        // if ($request->input('room_id')) {
+        //     $computers->where('room_id', $request->input('room_id'));
+        // }
+        // if ($request->input('status_id')) {
+        //     $computers->where('status_id', $request->input('status_id'));
+        // }
+
+        // if ($request->input('keyword')) {
+        //     $computers->where('name', 'like', "%" . $request->input('keyword') . "%");
+        // }
+        // $computers =  $computers
+        //     ->paginate(20)
+        //     ->withQueryString();
 
         $rooms = Room::query()
             ->select('room_id', 'name')
@@ -88,7 +96,18 @@ class ComputerController extends Controller
     {
         $validatedData = $request->validate([
             'computer_id' => 'nullable',
-            'name' => 'required',
+            'name' => [
+                'required',
+                function ($attribute, $value, $fail) use ($request) {
+                    // true = validation fail
+                    $isComputerNameExist = Computer::where('name', $value)
+                        ->where('room_id', $request->input('room_id'))
+                        ->exists();
+                    if ($isComputerNameExist && !$request->input('computer_id')) {
+                        $fail('This computer name already exists in this room');
+                    }
+                }
+            ],
             'description' => 'nullable',
             'room_id' => 'required|exists:rooms,room_id',
             'status_id' => 'required|exists:status,id',
@@ -98,14 +117,11 @@ class ComputerController extends Controller
         // $request->computer_id
         if ($request->input('computer_id')) {
             $request->validate([
-                'name' => 'unique:computers,name,' . $request->input('computer_id') . ',computer_id'
+                // 'name' => 'unique:computers,name,' . $request->input('computer_id') . ',computer_id'
             ]);
             $computer = Computer::findOrFail($request->input('computer_id'));
             $computer->update($validatedData);
         } else {
-            $request->validate([
-                'name' => 'unique:computers,name'
-            ]);
             Computer::create($validatedData);
         }
 
@@ -155,6 +171,8 @@ class ComputerController extends Controller
      */
     public function destroy(Computer $computer)
     {
-        //
+        $computer->delete();
+
+        return redirect()->back();
     }
 }
